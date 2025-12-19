@@ -1,0 +1,131 @@
+import random
+
+taille_grille = 6
+nb_bombes = 4
+
+# Génération de toutes les coordonnées possibles de la grille
+
+liste_cases = []
+liste_lignes = range(taille_grille)
+liste_colonnes = range(taille_grille)
+
+for ligne in liste_lignes:
+  for colonne in liste_colonnes:
+    liste_cases.append((ligne, colonne))
+
+liste_bombes = random.sample(liste_cases, nb_bombes)
+
+cases_decouvertes = []
+
+cases_marquees = []
+
+emoji_nombre = ["0️⃣​","1️⃣","2️⃣","3️⃣","4️⃣","5️⃣","6️⃣","7️⃣","8️⃣"]
+
+def compter_bombes_autour(ligne, colonne):
+
+  compteur_bombes = 0
+
+  for decalage_ligne in [-1, 0, 1]:
+    for decalage_colonne in [-1, 0, 1]:
+      case_voisine = (ligne + decalage_ligne, colonne + decalage_colonne)
+      if case_voisine in liste_bombes:
+        compteur_bombes += 1
+
+  return compteur_bombes
+
+
+def afficher_grille():
+
+    print("\n   " + " ".join(str(i) for i in range(1,taille_grille+1)))
+    print("  " + "--" * taille_grille)
+
+    for ligne in range(taille_grille):
+        texte_ligne = f"{ligne+1}|"
+        for colonne in range(taille_grille):
+          point = (ligne, colonne)
+
+          if point in cases_decouvertes:
+              if point in liste_bombes:
+                  texte_ligne += "💣"
+              else:
+                  nb = compter_bombes_autour(ligne, colonne)
+                  texte_ligne += emoji_nombre[nb]
+
+          # Case non découverte mais marquée par un drapeau
+          elif point in cases_marquees:
+              texte_ligne += "🚩"
+
+          # Case encore cachée
+          else:
+              texte_ligne += "⏺️​"
+
+          texte_ligne += " "
+
+        print(texte_ligne)
+
+
+def jouer():
+
+    print("💣 Bienvenue dans le DÉMINEUR PHONG ANH !")
+    print(f"Il y a {nb_bombes} bombes EXPLOSIFS cachées. À toi de ne pas MOURRIR!\n")
+    print("   Tape 'd' pour découvrir une case, 'f' pour poser/retirer un drapeau.\n")
+
+    while True:
+
+        afficher_grille()
+
+       
+        if len(cases_decouvertes) == taille_grille * taille_grille - nb_bombes :
+            print("🎉 Bravo ! TU AS DEMORCER UN BOMBE SANS VICTIME !")
+            afficher_grille()
+            break
+
+        action = input("Action (d = découvrir, f = drapeau) : ").strip().lower()
+        if action not in ("d", "f"):
+            print("⛔ Action invalide. Tape 'd' ou 'f'.")
+            continue
+
+        try:
+            ligne = int(input("Choisis une ligne : "))
+            colonne = int(input("Choisis une colonne : "))
+
+        except ValueError:
+            print("⛔ Entrez des nombres valides.")
+            continue
+
+        point = (ligne-1, colonne-1)
+        if not (1 <= ligne < taille_grille +1 and 1 <= colonne < taille_grille+1):
+            print("⛔ Coordonnées hors de la grille.")
+            continue
+
+        if action == "f":
+            if point in cases_decouvertes:
+                print("⚠️ Tu ne peux pas mettre de drapeau sur une case déjà découverte.")
+                continue
+
+            cases_marquees.append(point)
+            print("✅ Drapeau posé.")
+            continue  
+
+
+        if action == "d":
+            if point in cases_marquees:
+                print("⚠️ Cette case est marquée par un drapeau. Retire-le d'abord si tu veux la découvrir.")
+                continue
+
+            if point in cases_decouvertes:
+                print("tu as déjà découvert cette case")
+                continue
+
+            # On révèle la case
+            cases_decouvertes.append(point)
+
+            # Si c'est une bombe → défaite
+            if point in liste_bombes:
+                print("💥 LOSER BOU T ES NUL SALE NOOB")
+                afficher_grille()
+                print("💀 Partie terminée.")
+                break
+
+
+jouer()
