@@ -1,0 +1,191 @@
+import pygame, sys
+from pygame.locals import QUIT
+import random
+import time
+
+pygame.init()
+
+police_titre = pygame.font.SysFont(None,100)
+police = pygame.font.SysFont(None,50)
+
+titre = police_titre.render("LE LABYRINTHE",True,"white")
+texte = police.render("Appuyer sur ESPACE pour commencer",True,"white")
+texte_gagne =  police.render("bien joué",True,"white")
+
+largeur, hauteur = 800, 600
+fenetre = pygame.display.set_mode((largeur, hauteur))
+pygame.display.set_caption("dedalou")
+
+cellule = 25
+
+murs = [(-1, 1), (0, 0), (1, 0), (3, 0), (2, 0), (4, 0), (5, 0), (7, 0), (6, 0), (8, 0), (9, 0), (10, 0), (11, 0), (12, 0), (13, 0), (14, 0), (15, 0), (16, 0), (17, 0), (18, 0), (19, 0), (20, 0), (22, 0), (23, 0), (25, 0), (27, 0), (28, 0), (31, 0), (31, 1), (31, 2), (31, 3), (31, 5), (31, 7), (31, 13), (31, 8), (31, 10), (31, 11), (31, 14), (31, 15), (31, 17), (31, 22), (31, 20), (31, 18), (31, 19), (31, 23), (31, 16), (31, 12), (31, 9), (31, 4), (30, 0), (29, 0), (26, 0), (24, 0), (21, 0), (0, 2), (0, 4), (0, 5), (0, 8), (0, 12), (0, 13), (0, 20), (0, 23), (0, 22), (0, 21), (0, 19), (0, 18), (0, 16), (0, 14), (0, 15), (0, 17), (0, 10), (0, 9), (0, 7), (0, 6), (0, 3), (1, 23), (4, 23), (7, 23), (10, 23), (12, 23), (13, 23), (16, 23), (19, 23), (23, 23), (25, 23), (26, 23), (29, 23), (30, 23), (27, 23), (28, 23), (24, 23), (22, 23), (21, 23), (20, 23), (17, 23), (18, 23), (15, 23), (14, 23), (11, 23), (9, 23), (8, 23), (6, 23), (5, 23), (3, 23), (2, 23), (2, 20), (2, 19), (2, 21), (3, 21), (4, 21), (1, 17), (2, 17), (4, 17), (4, 18), (4, 19), (6, 18), (6, 16), (6, 17), (4, 14), (4, 15), (6, 15), (6, 14), (3, 15), (2, 15), (1, 15), (2, 7), (2, 8), (2, 6), (4, 13), (4, 12), (4, 10), (4, 11), (4, 9), (3, 9), (2, 9), (2, 13), (2, 12), (2, 11), (1, 4), (2, 4), (5, 4), (4, 4), (2, 2), (3, 2), (4, 2), (5, 2), (6, 2), (7, 2), (7, 3), (7, 5), (7, 6), (6, 6), (5, 6), (4, 6), (4, 7), (8, 6), (8, 7), (6, 8), (6, 10), (6, 9), (6, 12), (5, 12), (7, 12), (8, 12), (7, 10), (7, 14), (8, 21), (8, 14), (8, 16), (9, 14), (9, 16), (10, 16), (10, 21), (9, 21), (11, 21), (9, 1), (9, 2), (9, 3), (9, 4), (9, 6), (10, 6), (11, 6), (11, 5), (11, 4), (11, 3), (11, 2), (11, 1), (8, 8), (9, 12), (10, 12), (10, 11), (10, 10), (10, 9), (10, 8), (8, 10), (10, 14), (11, 14), (12, 14), (12, 12), (12, 6), (15, 15), (15, 16), (15, 14), (15, 12), (15, 11), (15, 10), (14, 12), (12, 11), (13, 10), (13, 9), (13, 8), (12, 10), (13, 7), (11, 8), (15, 9), (13, 6), (15, 8), (16, 8), (15, 6), (16, 6), (13, 4), (14, 4), (15, 4), (13, 3), (13, 2), (15, 1), (15, 2), (7, 18), (10, 19), (15, 22), (15, 21), (15, 17), (15, 18), (17, 6), (17, 4), (17, 5), (17, 3), (17, 2), (16, 10), (18, 10), (17, 10), (18, 9), (18, 8), (19, 6), (19, 5), (19, 4), (19, 3), (17, 22), (17, 21), (17, 20), (17, 19), (17, 18), (17, 17), (17, 16), (17, 15), (17, 14), (17, 12), (17, 13), (18, 12), (19, 12), (20, 8), (21, 8), (22, 8), (22, 12), (30, 20), (29, 20), (29, 21), (28, 21), (27, 21), (25, 20), (25, 21), (27, 19), (27, 18), (23, 22), (23, 21), (23, 20), (23, 19), (23, 18), (25, 18), (26, 18), (28, 18), (29, 18), (29, 17), (27, 15), (26, 15), (25, 15), (19, 16), (19, 15), (19, 14), (22, 14), (21, 22), (21, 21), (21, 19), (15, 20), (23, 17), (27, 16), (25, 13), (21, 7), (21, 5), (21, 6), (21, 4), (20, 2), (19, 2), (21, 2), (22, 2), (22, 3), (22, 4), (23, 2), (24, 2), (25, 2), (27, 1), (27, 2), (27, 5), (27, 4), (27, 6), (29, 2), (29, 3), (29, 4), (29, 5), (29, 7), (29, 6), (29, 8), (29, 9), (29, 10), (23, 11), (23, 6), (24, 6), (25, 6), (26, 6), (25, 3), (25, 4), (24, 4), (26, 10), (26, 8), (27, 8), (28, 10), (30, 12), (29, 12), (27, 10), (26, 12), (27, 12), (28, 12), (28, 14), (29, 14), (29, 16), (27, 14), (25, 12), (25, 10), (23, 10), (23, 9), (23, 8), (25, 8), (24, 10), (21, 10), (20, 10), (20, 14), (21, 12), (23, 12), (7, 4), (19, 17), (22, 16), (21, 16), (20, 18), (21, 18), (19, 18), (20, 20), (19, 20), (21, 20), (19, 22), (26, 4), (23, 13), (23, 14), (25, 16), (23, 16), (19, 8), (3, 4), (12, 21), (13, 21), (11, 19), (12, 19), (13, 19), (13, 17), (12, 17), (14, 17), (11, 17), (9, 19), (13, 15), (13, 14), (11, 16), (9, 18), (8, 18), (7, 22), (7, 21), (4, 20), (6, 19), (7, 20), (6, 20), (5, 22), (4, 22), (15, 13), (20, 12), (0, 11), (31, 6), (24, 16), (24, 20)]
+
+joueur_x = 0 * cellule
+joueur_y = 1 * cellule
+
+while True:
+    ennemi_x = cellule * random.randint(0, largeur//cellule - 1)
+    ennemi_y = cellule * random.randint(0, hauteur//cellule - 1)
+    if ((ennemi_x//cellule, ennemi_y//cellule) not in murs and
+        not (ennemi_x == joueur_x and ennemi_y == joueur_y)):
+        break
+menu = True
+
+while menu:
+
+    fenetre.fill("black")
+
+    fenetre.blit(titre,(largeur//2 - titre.get_width()//2,200))
+    fenetre.blit(texte,(largeur//2 - texte.get_width()//2,400))
+
+    pygame.display.update()
+
+    for event in pygame.event.get():
+
+        if event.type == QUIT:
+            pygame.quit()
+            sys.exit()
+
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                menu = False
+
+pas = cellule
+vitesse_ennemi = cellule // pas
+compteur_deplacement = 0
+declenchement = True
+direction_ennemi = None
+
+murs_def = []
+
+clock = pygame.time.Clock()
+
+def deplacement_ennemi(declenchement, ennemi_x, ennemi_y):
+    if declenchement:
+        directions = ["droite","gauche","haut","bas"]
+        random.shuffle(directions)
+        for direction in directions:
+            if direction == "droite":
+                if ((ennemi_x + cellule)//cellule, ennemi_y//cellule) not in murs:
+                    return "droite"
+            if direction == "gauche":
+                if ((ennemi_x - cellule)//cellule, ennemi_y//cellule) not in murs:
+                    return "gauche"
+            if direction == "bas":
+                if (ennemi_x//cellule, (ennemi_y + cellule)//cellule) not in murs:
+                    return "bas"
+            if direction == "haut":
+                if (ennemi_x//cellule, (ennemi_y - cellule)//cellule) not in murs:
+                    return "haut"
+    return None
+
+gagne = False
+
+while True:
+
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            pygame.quit()
+            sys.exit()
+
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_LEFT and ((joueur_x - cellule)//cellule, joueur_y//cellule) not in murs and joueur_x > 0:
+                joueur_x -= cellule
+            if event.key == pygame.K_RIGHT and ((joueur_x + cellule)//cellule, joueur_y//cellule) not in murs and joueur_x < largeur - cellule:
+                joueur_x += cellule
+            if event.key == pygame.K_UP and (joueur_x//cellule, (joueur_y - cellule)//cellule) not in murs and joueur_y > 0:
+                joueur_y -= cellule
+            if event.key == pygame.K_DOWN and (joueur_x//cellule, (joueur_y + cellule)//cellule) not in murs and joueur_y < hauteur - cellule:
+                joueur_y += cellule
+
+    direction = deplacement_ennemi(declenchement, ennemi_x, ennemi_y)
+
+    if joueur_x > 770:
+        gagne = True
+
+    if gagne:
+        fenetre.blit(texte_gagne, (largeur//2 - texte_gagne.get_width()//2, hauteur//2 - texte_gagne.get_height()//2))
+        pygame.display.update()
+        time.sleep(10)
+        continue
+
+
+    if direction != None:
+        declenchement = False
+        compteur_deplacement = pas
+        direction_ennemi = direction
+
+    if compteur_deplacement != 0:
+        if direction_ennemi == "gauche":
+            ennemi_x -= vitesse_ennemi
+            compteur_deplacement -= 1
+        if direction_ennemi == "droite":
+            ennemi_x += vitesse_ennemi
+            compteur_deplacement -= 1
+        if direction_ennemi == "bas":
+            ennemi_y += vitesse_ennemi
+            compteur_deplacement -= 1
+        if direction_ennemi == "haut":
+            ennemi_y -= vitesse_ennemi
+            compteur_deplacement -= 1
+    else:
+        declenchement = True
+
+    vision_x = joueur_x // cellule
+    vision_y = joueur_y // cellule
+    vision = [(vision_x, vision_y)]
+    murs_visibles = []
+
+    x = vision_x
+    while x < largeur//cellule:
+        x += 1
+        if (x, vision_y) in murs:
+            murs_visibles.append((x, vision_y))
+            break
+        vision.append((x, vision_y))
+
+    x = vision_x
+    while x > 0:
+        x -= 1
+        if (x, vision_y) in murs:
+            murs_visibles.append((x, vision_y))
+            break
+        vision.append((x, vision_y))
+
+    y = vision_y
+    while y < hauteur//cellule:
+        y += 1
+        if (vision_x, y) in murs:
+            murs_visibles.append((vision_x, y))
+            break
+        vision.append((vision_x, y))
+
+    y = vision_y
+    while y > 0:
+        y -= 1
+        if (vision_x, y) in murs:
+            murs_visibles.append((vision_x, y))
+            break
+        vision.append((vision_x, y))
+
+    for mur in murs_visibles:
+        if mur not in murs_def:
+            murs_def.append(mur)
+
+    fenetre.fill("dark grey")
+
+    for sol in vision:
+        pygame.draw.rect(fenetre, "grey", (sol[0]*cellule, sol[1]*cellule, cellule, cellule))
+
+    for mur in murs_def:
+        pygame.draw.rect(fenetre, "black", (mur[0]*cellule, mur[1]*cellule, cellule, cellule))
+   
+    if (ennemi_x//cellule, ennemi_y//cellule) in vision :
+        pygame.draw.rect(fenetre, "dark green", (ennemi_x, ennemi_y, cellule, cellule))
+
+    
+ 
+    pygame.draw.circle(fenetre, "dark red", (joueur_x + cellule//2, joueur_y + cellule//2), cellule//2)
+   
+    pygame.display.update()
+    clock.tick(60)
