@@ -1,0 +1,182 @@
+import pygame
+import sys
+import time
+from pygame.locals import QUIT
+import random
+
+def deplacement_ennemi(enclechemment_mouvement, ennemi_position_x, ennemi_position_y):
+    if enclechemment_mouvement:
+        aleatoire = random.randint(1,4)
+
+        if aleatoire == 1:
+            if ((ennemi_position_x + cellule)//cellule, ennemi_position_y//cellule) not in murs:
+                return "droite"
+
+        elif aleatoire == 2:
+            if ((ennemi_position_x - cellule)//cellule, ennemi_position_y//cellule) not in murs:
+                
+                return "gauche"
+
+        elif aleatoire == 3:
+            if (ennemi_position_x//cellule, (ennemi_position_y + cellule)//cellule) not in murs:
+                
+                return "bas"
+
+        elif aleatoire == 4:
+            if (ennemi_position_x//cellule, (ennemi_position_y - cellule)//cellule) not in murs:
+                
+                return "haut"
+
+    return None
+
+
+pygame.init()
+
+
+
+police_titre = pygame.font.SysFont(None,100)
+police = pygame.font.SysFont(None,50)
+
+titre = police_titre.render("LABYRINTHE",True,"blue")
+texte = police.render("Evite l'ennemi et arrive en bas à droite",True,"grey")
+
+largeur = 1350
+hauteur = 750
+
+fenetre = pygame.display.set_mode((largeur, hauteur))
+pygame.display.set_caption("le labyrinthe")
+cellule = 50
+pas = cellule
+vitesse_ennemi = cellule // pas
+compteur_deplacement = 0
+enclechemment = True
+
+direction_ennemi = None
+
+joueur_position_x = 1 * cellule
+joueur_position_y = 7 * cellule
+
+ennemi_position_x = cellule * random.randint(0, largeur // cellule)
+ennemi_position_y = cellule * random.randint(0, hauteur // cellule)
+
+murs=[(0, 0), (0, 1), (0, 2), (0, 3), (0, 4), (0, 5), (0, 6), (0, 7), (0, 8), (0, 9), (0, 10), (0, 11), (0, 12), (0, 13), (0, 14), (1, 0), (2, 0), (3, 0), (4, 0), (5, 0), (10,0),
+(6, 0), (8, 0), (7, 0), (9, 0), (15, 0), (16, 0), (17, 0), (18, 0), (19, 0), (20, 0), (21, 0), (22, 0), (23, 0), (24, 0), (25, 0), (26, 0), (26, 1), (26, 2), (26, 3), (14, 0), (13, 0), (12, 0), (11, 0), (26, 4), (26, 5), (26, 6), (26, 7), (26, 8), (26, 10), (26, 9), (26, 11), (26, 12), (26, 14), (1, 14), (2, 14), (3, 14), (4, 14), (5, 14), (6, 14), (7, 14), (8, 14), (9, 14), (10, 14), (11, 14), (12, 14), (13, 14), (14, 14), (15, 14), (16, 14), (17, 14), (18, 14), (19, 14), (20, 14), (22, 14), 
+(21, 14), (25, 14), (24, 14), (1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 8), (1, 9), (2, 8), (2, 9), (2, 6), (3, 5), (3, 4), (3, 6), (3, 3), (3, 2), (4, 2), 
+(5, 2), (6, 2), (5, 5), (5, 6), (2, 12), (2, 11), (3, 11), (4, 11), (4, 9), (4, 10), (4, 8), (6, 9), (5, 9), (7, 9), (7, 10), (8, 10), (9, 10), (6, 6), (7, 6), (7, 7), (6, 7), (8, 7), (9, 7), (9, 8), (9, 9), (2, 13), (7, 2), (8, 2), (8, 1), (5, 4), (6, 4), (7, 4), (8, 4), (9, 5), (9, 4), (10, 4), (10, 3), (10, 2), (11, 2), (12, 2), (13, 2), (13, 3), (15, 3), (15, 2), (16, 2), (17, 2), (18, 2), (19, 2), (20, 2), (21, 2), (22, 2), (23, 2), (25, 2), (23, 4), (23, 5), (13, 4), (13, 5), (15, 4), (15, 5), (15, 6), (14, 7), (15, 7), (13, 7), (12, 7), (11, 7), (11, 8), (11, 9), (11, 10), (11, 11), (11, 12), (11, 13), (10, 12), (9, 12), (8, 12), (7, 12), (6, 12), (3, 13), (4, 13), (5, 10), (6, 10), (25, 3), (25, 4), (25, 6), (25, 5), (23, 6), (23, 7), (25, 7), (25, 8), (22, 7), (21, 5), (21, 4), (20, 4), (19, 4), (18, 4), (17, 
+4), (17, 5), (17, 6), (18, 6), (19, 6), (19, 7), (25, 9), (25, 10), (25, 11), (25, 12), (26, 13), (24, 9), (23, 9), (22, 9), (21, 9), (20, 9), (19, 9), (16, 9), (17, 
+9), (14, 9), (15, 9), (13, 9), (13, 10), (13, 11), (19, 8), (17, 7), (18, 7), (14, 11), (18, 11), (19, 11), (20, 11), (22, 11), (21, 11), (23, 11), (23, 12), (24, 13), (25, 13), (15, 11), (15, 12), (14, 12), (13, 12), (16, 12), (17, 12), (18, 12), (19, 12), (20, 12), (22, 12), (21, 12), (16, 11), (17, 11)]
+
+
+fenetre.fill("#facc9b")
+
+menu = True
+game_over = False
+police_game_over = pygame.font.SysFont(None, 100)
+texte_game_over = police_game_over.render("GAME OVER", True, "red") 
+gagne = False
+texte_gagne = police_game_over.render("bravo", True, "yellow") 
+
+while menu:
+
+    fenetre.fill("black")
+
+    fenetre.blit(titre,(largeur//2 - titre.get_width()//2,200))
+    fenetre.blit(texte,(largeur//2 - texte.get_width()//2,400))
+
+    pygame.display.update()
+
+    for event in pygame.event.get():
+
+        if event.type == QUIT:
+            pygame.quit()
+            sys.exit()
+
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                menu = False
+
+while (ennemi_position_x // cellule, ennemi_position_y // cellule) in murs or (ennemi_position_x,ennemi_position_y)==(joueur_position_x,joueur_position_y):
+    ennemi_position_x = cellule * random.randint(0, largeur//cellule)
+    ennemi_position_y = cellule * random.randint(0, hauteur//cellule)
+
+while True:
+
+    for event in pygame.event.get():
+
+        if event.type == QUIT:
+            pygame.quit()
+            sys.exit()
+
+        if event.type == pygame.KEYDOWN:
+
+            if event.key == pygame.K_LEFT and ((joueur_position_x-cellule)//cellule,joueur_position_y//cellule) not in murs:
+                joueur_position_x -= cellule
+
+            if event.key == pygame.K_RIGHT and ((joueur_position_x+cellule)//cellule,joueur_position_y//cellule) not in murs:
+                joueur_position_x += cellule
+
+            if event.key == pygame.K_UP and ((joueur_position_x//cellule),(joueur_position_y-cellule)//cellule) not in murs:
+                joueur_position_y -= cellule
+
+            if event.key == pygame.K_DOWN and ((joueur_position_x//cellule),(joueur_position_y+cellule)//cellule) not in murs:
+                joueur_position_y += cellule
+            
+            print(joueur_position_y)
+
+    direction = deplacement_ennemi(enclechemment, ennemi_position_x, ennemi_position_y)
+
+    if direction:
+        enclechemment = False
+        compteur_deplacement = pas
+        direction_ennemi = direction
+
+    if compteur_deplacement != 0:
+
+        if direction_ennemi == "gauche":
+            ennemi_position_x -= vitesse_ennemi
+            compteur_deplacement -= 1
+
+        if direction_ennemi == "droite":
+            ennemi_position_x += vitesse_ennemi
+            compteur_deplacement -= 1
+
+        if direction_ennemi == "bas":
+            ennemi_position_y += vitesse_ennemi
+            compteur_deplacement -= 1
+
+        if direction_ennemi == "haut":
+            ennemi_position_y -= vitesse_ennemi
+            compteur_deplacement -= 1
+
+    else:
+        enclechemment = True
+
+    fenetre.fill("#facc9b")
+
+    if ennemi_position_x == joueur_position_x and ennemi_position_y == joueur_position_y:
+        game_over = True
+
+    if joueur_position_y > 745:
+        gagne = True
+
+    if game_over:
+        fenetre.blit(texte_game_over, (largeur//2 - texte_game_over.get_width()//2, hauteur//2 - texte_game_over.get_height()//2))
+        pygame.display.update()
+        time.sleep(10)
+
+    if gagne:
+        fenetre.blit(texte_gagne, (largeur//2 - texte_gagne.get_width()//2, hauteur//2 - texte_gagne.get_height()//2))
+        pygame.display.update()
+        time.sleep(10)
+        
+
+    for mur in murs:
+        pygame.draw.rect(fenetre,"#453d3e",(mur[0]*cellule,mur[1]*cellule,cellule,cellule))
+
+
+
+    pygame.draw.rect(fenetre,"red",(joueur_position_x,joueur_position_y,cellule,cellule))
+    pygame.draw.rect(fenetre,"green",(ennemi_position_x,ennemi_position_y,cellule,cellule))
+
+    pygame.display.update()
+
